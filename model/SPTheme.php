@@ -100,6 +100,10 @@ class SPTheme {
 		$this->themePath = $designSingleton->getBaseDir($infoArr);
 		$this->skinPath = $designSingleton->getSkinBaseDir($infoArr);
 
+		if(!file_exists($this->skinPath)) {
+			$this->skinPath = null;
+		}
+
 		$layoutPath = $this->themePath . "layout";
 		if(file_exists($layoutPath)) {
 			$this->layoutPath = $layoutPath;
