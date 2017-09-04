@@ -6,7 +6,7 @@
 	require_once './model/SPPackage.php';
 	require_once './model/SPTheme.php';
 
-	$moduleName = $argv[0];
+	$moduleName = $argv[1];
 	$modules = Mage::getConfig()->getNode('modules')->children();
 	$modulesArray = (array)$modules;
 
