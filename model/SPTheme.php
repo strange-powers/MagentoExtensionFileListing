@@ -19,6 +19,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes name
 	 * @return String
 	 */
 	public function getThemeName() {
@@ -26,6 +27,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes basepath
 	 * @return String
 	 */
 	public function getThemePath() {
@@ -33,6 +35,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes template path
 	 * @return String
 	 */
 	public function getTemplatePath() {
@@ -40,6 +43,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes layout path
 	 * @return String
 	 */
 	public function getLayoutPath() {
@@ -47,6 +51,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes skin path
 	 * @return String
 	 */
 	public function getSkinPath() {
@@ -54,6 +59,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Get the themes packages name
 	 * @return String
 	 */
 	public function getPackageName() {
@@ -116,6 +122,7 @@ class SPTheme {
 	}
 
 	/**
+	 * Returns every theme that is installed
 	 * @return SPTheme[]
 	 */
 	public static function getAllThemes() {

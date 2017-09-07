@@ -5,8 +5,9 @@
 	require_once './model/SPExtension.php';
 	require_once './model/SPPackage.php';
 	require_once './model/SPTheme.php';
+	#require_once "./model/SPXMLParser.php";
 
-	$moduleName = $argv[1];
+	/*$moduleName = $argv[1];
 	$modules = Mage::getConfig()->getNode('modules')->children();
 	$modulesArray = (array)$modules;
 
@@ -15,6 +16,6 @@
 		$extension->listAllFiles();
 	} else {
 		echo "Module not found!" . PHP_EOL;
-	}
+	}*/
 
-?>
+	var_dump(Mage::getModuleDir("", "Iways_PayPalPlus"));
