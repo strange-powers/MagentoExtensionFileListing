@@ -12,9 +12,9 @@ class SPExtension {
 	function __construct($data) {
 		$this->configFile       = $data["configFile"];
 		$this->modelPath        = $data["modelPath"];
-		$this->templateFiles    = $data["configFile"];
-		$this->layoutFiles      = $data["configFile"];
-		$this->skinFiles        = $data["configFile"];
+		$this->templateFiles    = $data["templateFiles"];
+		$this->layoutFiles      = $data["layoutFiles"];
+		$this->skinFiles        = $data["skinFiles"];
 	}
 
 	/**

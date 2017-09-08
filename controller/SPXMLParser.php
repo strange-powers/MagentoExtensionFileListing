@@ -1,44 +1,38 @@
 <?php
 
 class SPXMLParser {
-	private $dom;
 	private $xPath;
-	private $xmlFile;
-
-	public function __construct($file) {
-		$this->dom = new DOMDocument();
-		$this->xPath = new DOMXPath();
-		$this->setXmlFile($file);
-	}
 
 	/**
 	 * @param string $xmlFile
 	 */
-	public function setXmlFile( $xmlFile ) {
-		$this->xmlFile = $xmlFile;
-		$this->dom->load($this->xmlFile);
-		$this->xPath->document = $this->dom;
+	public function load($xmlFile) {
+		$dom = new DOMDocument();
+		$dom->load($xmlFile);
+		$this->xPath = new DOMXPath($dom);
 	}
 
 	/**
 	 * Searches in the entire xml file for the node name (ignores comments)
 	 * @param $nodeName string
-	 * @return string[]
+	 * @return DOMNode[]
 	 */
 	public function searchForNodeName($nodeName) {
 		$foundNodes = array();
 		$commentedXML = $this->xPath->query("//comment()");
+		$usualXML = $this->xPath->query("//" . $nodeName);
 
 		/* Searches in the ordinary xml */
-		foreach($this->dom->getElementsByTagName($nodeName) as $node) {
+		foreach($usualXML as $node) {
 			array_push($foundNodes, $node);
 		}
 
 		/* Searches in the commented xml */
+		$commentDom = new DOMDocument();
 		foreach($commentedXML as $comment) {
 			$commentXML = "<spwrap>" . $comment->nodeValue . "</spwrap>";
-			$this->loadXML($commentXML);
-			foreach($this->getElementsByTagName($nodeName) as $commentNode) {
+			$commentDom->loadXML($commentXML);
+			foreach($commentDom->getElementsByTagName($nodeName) as $commentNode) {
 				array_push($foundNodes, $commentNode);
 			}
 		}
