@@ -1,36 +1,19 @@
 <?php
 
 class SPExtensionController {
-	private $xmlParser;
-	private $moduleName;
-
-	/**
-	 * Every Nodename has a function where the nodename has to be searched for
-	 * @var array
-	 */
-	private static $templateNodeFunctions = array(
-		"template"      => "checkForTemplateFile",
-		"stylesheet"    => "checkForSkinFile",
-		"name"          => "checkForSkinFile"
-	);
-
-	public function __construct($moduleName) {
-		$this->xmlParser = new SPXMLParser();
-		$this->moduleName = $moduleName;
-	}
-
 	/**
 	 * Gathers data and fills the model object with this data
+	 *
 	 * @return SPExtension
 	 */
-	public function fillExtensionWithData() {
-		$modelData = array("name"   => $this->moduleName);
+	public function generateExtension($extensionName) {
+		$modelData = array("name"   => $extensionName);
 
-		$configFile = Mage::getModuleDir('etc', $this->moduleName) . DS . "config.xml";
+		$configFile = Mage::getModuleDir('etc', $extensionName) . DS . "config.xml";
 		$modelData["configFile"] = $configFile;
-		$modelData["modelPath"] = Mage::getModuleDir("", $this->moduleName);
+		$modelData["modelPath"] = Mage::getModuleDir("", $extensionName);
+
 		$layoutFiles = $this->gatherLayoutFiles($configFile);
-		var_dump($layoutFiles);
 		$modelData["layoutFiles"] = $layoutFiles;
 
 		$modelData["templateFiles"] = $this->gatherTemplateFiles($layoutFiles);
@@ -39,7 +22,7 @@ class SPExtensionController {
 		return new SPExtension($modelData);
 	}
 
-	public function deleteExtension() {
+	public function deleteExtension($extension) {
 
 	}
 
@@ -51,7 +34,8 @@ class SPExtensionController {
 	 * @return string[]
 	 */
 	private function gatherTemplateFiles($layoutFiles) {
-		return $this->gatherDataFromLayoutFiles($layoutFiles,"template");
+		$foundPaths = $this->gatherPathsFromLayoutFiles($layoutFiles, array("template"), array("template"));
+		return $this->checkPathsInThemes($foundPaths, "checkForTemplateFile");
 	}
 
 	/**
@@ -62,36 +46,57 @@ class SPExtensionController {
 	 * @return string[]
 	 */
 	private function gatherSkinFiles($layoutFiles) {
-		return array_merge($this->gatherDataFromLayoutFiles($layoutFiles,"stylesheet"), $this->gatherDataFromLayoutFiles($layoutFiles,"name"));
+		$foundPaths = $this->gatherPathsFromLayoutFiles($layoutFiles, array("stylesheet", "name"), array());
+
+		return $this->checkPathsInThemes($foundPaths, "checkForSkinFile");
+	}
+
+	private function checkPathsInThemes($paths, $checkFunction) {
+		$foundFiles = array();
+
+		foreach (SPTheme::getAllThemes() as $theme) {
+			foreach ($paths as $path) {
+				if ($foundFile = $theme->$checkFunction($path)) {
+					if (!in_array($foundFile, $foundFiles)) {
+						array_push($foundFiles, $foundFile);
+					}
+				}
+			}
+		}
+
+		return $foundFiles;
 	}
 
 	/**
 	 * Gathers paths of files found by node in an array of layout files
 	 *
 	 * @param string $layoutFiles
-	 * @param string $nodeName
+	 * @param array $nodeNames
+	 * @param array $attributeNames
 	 *
 	 * @return string[]
 	 */
-	private function gatherDataFromLayoutFiles($layoutFiles, $nodeName) {
-		$allThemes             = SPTheme::getAllThemes();
-		$foundFiles            = array();
-		$themeFunction         = (string) self::$templateNodeFunctions[$nodeName];
+	private function gatherPathsFromLayoutFiles($layoutFiles, $nodeNames, $attributeNames) {
+		$xmlParser             = new SPXMLParser();
+		$foundPaths            = array();
 
 		foreach ($layoutFiles as $layoutFile) {
-			$this->xmlParser->load($layoutFile);
-			$fileNodes = $this->xmlParser->searchForNodeName( $nodeName );
-			foreach ($fileNodes as $node) {
-				foreach ($allThemes as $theme) {
-					if ($foundFile = $theme->$themeFunction($node->nodeValue)) {
-						if (!in_array($foundFile, $foundFiles)) {
-							array_push($foundFiles, $foundFile);
-						}
-					}
+			$xmlParser->load($layoutFile);
+
+			foreach($attributeNames as $attributeName) {
+				foreach($xmlParser->searchForNodesByAttribute($attributeName) as $attributeNode) {
+					array_push($foundPaths, $attributeNode->getAttribute($attributeName));
+				}
+			}
+
+			foreach($nodeNames as $nodeName) {
+				foreach($xmlParser->searchForNodesByName($nodeName) as $node) {
+					array_push($foundPaths, $node->nodeValue);
 				}
 			}
 		}
-		return $foundFiles;
+
+		return $foundPaths;
 	}
 
 	/**
@@ -102,8 +107,9 @@ class SPExtensionController {
 	 * @return string[]
 	 */
 	private function gatherLayoutFiles($configFile) {
-		$this->xmlParser->load($configFile);
-		$gatheredLayoutNodes    = $this->xmlParser->searchForNodeName("layout");
+		$xmlParser             = new SPXMLParser();
+		$xmlParser->load($configFile);
+		$gatheredLayoutNodes    = $xmlParser->searchForNodesByName("layout");
 		$allThemes              = SPTheme::getAllThemes();
 		$availableLayoutFiles   = array();
 

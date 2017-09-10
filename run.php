@@ -13,9 +13,14 @@
 	$modulesArray = (array)$modules;
 
 	if(!is_null($modulesArray[$moduleName])) {
-		$extensionController = new SPExtensionController($moduleName);
-		$extension = $extensionController->fillExtensionWithData();
+		$extensionController = new SPExtensionController();
+		$extension = $extensionController->generateExtension($moduleName);
 		$extension->listAllFiles();
 	} else {
 		echo "Module not found!" . PHP_EOL;
 	}
+/*
+	$layoutFile = "/Applications/XAMPP/xamppfiles/htdocs/magento/app/design/frontend/base/default/layout/ordercomment.xml";
+	$xmlParser = new SPXMLParser();
+	$xmlParser->load($layoutFile);
+	var_dump($xmlParser->searchForNodesByAttribute("template")[0]->getAttribute("template"));*/
