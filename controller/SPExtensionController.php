@@ -51,6 +51,10 @@ class SPExtensionController {
 		return $this->checkPathsInThemes($foundPaths, "checkForSkinFile");
 	}
 
+	private function gatherLocaleFiles($layoutFiles) {
+
+	}
+
 	private function checkPathsInThemes($paths, $checkFunction) {
 		$foundFiles = array();
 
@@ -114,13 +118,13 @@ class SPExtensionController {
 		$availableLayoutFiles   = array();
 
 		foreach($gatheredLayoutNodes as $layoutNode) {
-			$layoutFile = str_replace(" ", "", $layoutNode->nodeValue);
-			$layoutFile = str_replace(PHP_EOL, "", $layoutFile);
-
-			if(!in_array($layoutFile, $availableLayoutFiles)) {
-				foreach($allThemes as $theme) {
-					if($foundLayoutFile = $theme->checkForLayoutFile($layoutFile)) {
-						array_push($availableLayoutFiles, $foundLayoutFile);
+			foreach($layoutNode->getElementsByTagName("file") as $layoutFileNode) {
+				$layoutFile = $layoutFileNode->textContent;
+				if(!in_array($layoutFile, $availableLayoutFiles)) {
+					foreach($allThemes as $theme) {
+						if($foundLayoutFile = $theme->checkForLayoutFile($layoutFile)) {
+							array_push($availableLayoutFiles, $foundLayoutFile);
+						}
 					}
 				}
 			}

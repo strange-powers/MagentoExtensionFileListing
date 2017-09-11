@@ -8,6 +8,7 @@ class SPExtension {
 	private $templateFiles;
 	private $layoutFiles;
 	private $skinFiles;
+	private $localeFiles;
 
 	function __construct($data) {
 		$this->configFile       = $data["configFile"];
@@ -25,31 +26,38 @@ class SPExtension {
 	}
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
 	public function getModelPath() {
 		return $this->modelPath;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getTemplateFiles() {
 		return $this->templateFiles;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getLayoutFiles() {
 		return $this->layoutFiles;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getSkinFiles() {
 		return $this->skinFiles;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getLocaleFiles() {
+		return $this->localeFiles;
 	}
 
 	public function listAllFiles() {

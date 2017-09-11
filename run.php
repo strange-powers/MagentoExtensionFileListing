@@ -8,6 +8,7 @@
 	require_once "./controller/SPXMLParser.php";
 	require_once "./controller/SPExtensionController.php";
 
+
 	$moduleName = $argv[1];
 	$modules = Mage::getConfig()->getNode('modules')->children();
 	$modulesArray = (array)$modules;
@@ -19,8 +20,12 @@
 	} else {
 		echo "Module not found!" . PHP_EOL;
 	}
+
 /*
-	$layoutFile = "/Applications/XAMPP/xamppfiles/htdocs/magento/app/design/frontend/base/default/layout/ordercomment.xml";
+	$layoutFile = "/Applications/XAMPP/xamppfiles/htdocs/magento/app/code/community/Brainvire/Ordercomment/etc/config.xml";
 	$xmlParser = new SPXMLParser();
 	$xmlParser->load($layoutFile);
-	var_dump($xmlParser->searchForNodesByAttribute("template")[0]->getAttribute("template"));*/
+	$nodeVal = $xmlParser->searchForNodesByName("layout");
+	var_dump($nodeVal[0]);
+	$nodeVal = str_replace(" ", "", $nodeVal);
+	$nodeVal = str_replace(PHP_EOL, "", $nodeVal);*/

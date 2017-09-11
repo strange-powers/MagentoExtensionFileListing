@@ -15,7 +15,7 @@ class SPXMLParser {
 	/**
 	 * Searches in the entire xml file for the node name (ignores comments)
 	 * @param $nodeName string
-	 * @return DOMNode[]
+	 * @return DOMElement[]
 	 */
 	public function searchForNodesByName($nodeName) {
 		$foundNodes = array();
