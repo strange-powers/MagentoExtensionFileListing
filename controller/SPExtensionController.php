@@ -63,7 +63,7 @@ class SPExtensionController {
 	private function checkPathsInThemes($paths, $checkFunction) {
 		$foundFiles = array();
 
-		foreach (SPTheme::getAllThemes() as $theme) {
+		foreach (SPThemeController::getAllThemes() as $theme) {
 			foreach ($paths as $path) {
 				if ($foundFile = $theme->$checkFunction($path)) {
 					if (!in_array($foundFile, $foundFiles)) {

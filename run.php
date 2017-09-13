@@ -5,6 +5,8 @@
 	require_once './model/SPExtension.php';
 	require_once './model/SPPackage.php';
 	require_once './model/SPTheme.php';
+
+	require_once './controller/SPThemeController.php';
 	require_once "./controller/SPXMLParser.php";
 	require_once "./controller/SPExtensionController.php";
 

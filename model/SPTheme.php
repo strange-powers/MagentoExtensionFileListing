@@ -12,10 +12,13 @@ class SPTheme {
 	private $packageName;
 
 
-	function __construct($themeName, $package) {
-		$this->themeName = $themeName;
-		$this->packageName = $package;
-		$this->gatherThemeData();
+	function __construct($data) {
+		$this->themeName = $data["themeName"];
+		$this->themePath = $data["themePath"];
+		$this->templatePath = $data["templatePath"];
+		$this->layoutPath = $data["layoutPath"];
+		$this->skinPath = $data["skinPath"];
+		$this->packageName = $data["packageName"];
 	}
 
 	/**
@@ -92,50 +95,5 @@ class SPTheme {
 		}
 
 		return null;
-	}
-
-	private function gatherThemeData() {
-		$designSingleton = Mage::getDesign();
-		$infoArr = array(
-			"_area"		=> "frontend",
-			"_relative" => false,
-			"_package"	=> $this->packageName,
-			"_theme"	=> $this->themeName
-		);
-
-		$this->themePath = $designSingleton->getBaseDir($infoArr);
-		$this->skinPath = $designSingleton->getSkinBaseDir($infoArr);
-
-		if(!file_exists($this->skinPath)) {
-			$this->skinPath = null;
-		}
-
-		$layoutPath = $this->themePath . "layout";
-		if(file_exists($layoutPath)) {
-			$this->layoutPath = $layoutPath;
-		}
-
-		$templatePath = $this->themePath . "template";
-		if(file_exists($layoutPath)) {
-			$this->templatePath = $templatePath;
-		}
-	}
-
-	/**
-	 * Returns every theme that is installed
-	 * @return SPTheme[]
-	 */
-	public static function getAllThemes() {
-		$themeNames = Mage::getSingleton('core/design_package')->getThemeList();
-		$themes = array();
-
-		foreach($themeNames as $packageName => $themeNames) {
-			foreach($themeNames as $themeName) {
-				$theme = new SPTheme($themeName, $packageName);
-				array_push($themes, $theme);
-			}
-		}
-
-		return $themes;
 	}
 }
