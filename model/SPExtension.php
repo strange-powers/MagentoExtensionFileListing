@@ -21,6 +21,7 @@ class SPExtension {
 	private $layoutFiles;
 	private $skinFiles;
 	private $localeFiles;
+	private $allFiles;
 
 	function __construct($data) {
 		$this->configFile       = $data["configFile"];
@@ -28,6 +29,14 @@ class SPExtension {
 		$this->templateFiles    = $data["templateFiles"];
 		$this->layoutFiles      = $data["layoutFiles"];
 		$this->skinFiles        = $data["skinFiles"];
+
+		$this->allFiles = array(
+			$this->configFile,
+			$this->modelPath,
+			$this->templateFiles,
+			$this->layoutFiles,
+			$this->skinFiles
+		);
 	}
 
 	/**
@@ -70,5 +79,12 @@ class SPExtension {
 	 */
 	public function getLocaleFiles() {
 		return $this->localeFiles;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getAllFiles(): array {
+		return $this->allFiles;
 	}
 }
