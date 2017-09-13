@@ -80,18 +80,50 @@ class SPTheme {
 		return $this->packageName;
 	}
 
+	/**
+	 * Checks if file exists in layout directory and returns
+	 * the complete path if the file exists null if not
+	 *
+	 * @param string $file
+	 *
+	 * @return null|string
+	 */
 	public function checkForLayoutFile($file) {
 		return $this->checkForFileInPath($file, $this->getLayoutPath());
 	}
 
+	/**
+	 * Checks if file exists in template directory and returns
+	 * the complete path if the file exists null if not
+	 *
+	 * @param string $file
+	 *
+	 * @return null|string
+	 */
 	public function checkForTemplateFile($file) {
 		return $this->checkForFileInPath($file, $this->getTemplatePath());
 	}
 
+	/**
+	 * Checks if file exists in skin directory and returns
+	 * the complete path if the file exists null if not
+	 *
+	 * @param string $file
+	 *
+	 * @return null|string
+	 */
 	public function checkForSkinFile($file) {
 		return $this->checkForFileInPath($file, $this->getSkinPath());
 	}
 
+	/**
+	 * Checks if file exists in the given directory and returns
+	 * the complete path if the file exists null if not
+	 *
+	 * @param string $file
+	 *
+	 * @return null|string
+	 */
 	private function checkForFileInPath($file, $path) {
 		if(!is_null($path)) {
 			$iterator = new RecursiveDirectoryIterator( $path );

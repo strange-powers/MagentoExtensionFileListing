@@ -18,6 +18,8 @@ class SPXMLParser {
 	private $xPath;
 
 	/**
+	 * Loads the XML File and makes it ready for use
+	 *
 	 * @param string $xmlFile
 	 */
 	public function load($xmlFile) {

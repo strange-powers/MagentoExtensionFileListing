@@ -17,7 +17,7 @@
 class SPThemeController {
 
 	/**
-	 * Gnerates a Theme object
+	 * Generates a Theme object
 	 *
 	 * @param $themeName
 	 * @param $packageName
