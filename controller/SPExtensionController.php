@@ -35,6 +35,7 @@ class SPExtensionController {
 	 */
 	private function gatherTemplateFiles($layoutFiles) {
 		$foundPaths = $this->gatherPathsFromLayoutFiles($layoutFiles, array("template"), array("template"));
+
 		return $this->checkPathsInThemes($foundPaths, "checkForTemplateFile");
 	}
 
@@ -55,6 +56,14 @@ class SPExtensionController {
 
 	}
 
+	/**
+	 * Checks if paths do exist in a theme
+	 *
+	 * @param $paths
+	 * @param $checkFunction
+	 *
+	 * @return string[]
+	 */
 	private function checkPathsInThemes($paths, $checkFunction) {
 		$foundFiles = array();
 

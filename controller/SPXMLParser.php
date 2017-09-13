@@ -14,12 +14,12 @@ class SPXMLParser {
 
 	/**
 	 * Searches in the entire xml file for the node name (ignores comments)
-	 * @param $nodeName string
+	 * @param $nodePath string
 	 * @return DOMElement[]
 	 */
-	public function searchForNodesByName($nodeName) {
+	public function searchForNodesByName($nodePath) {
 		$foundNodes = array();
-		$usualXML = $this->xPath->query("//" . $nodeName);
+		$usualXML = $this->xPath->query("//" . $nodePath);
 
 		/* Searches in the ordinary xml */
 		foreach($usualXML as $node) {
@@ -27,11 +27,13 @@ class SPXMLParser {
 		}
 
 		/* Searches in the commented xml */
-		$commentedXML = $this->getCommentedXML();
+		$commentedPlainXML = $this->getCommentedXML();
 		$commentDom = new DOMDocument();
-		$commentDom->loadXML($commentedXML);
+		$commentDom->loadXML($commentedPlainXML);
+		$commentedXPath = new DOMXPath($commentDom);
+		$commentedXML = $commentedXPath->query("//" . $nodePath);
 
-		foreach($commentDom->getElementsByTagName($nodeName) as $commentNode) {
+		foreach($commentedXML as $commentNode) {
 			array_push($foundNodes, $commentNode);
 		}
 
@@ -61,14 +63,21 @@ class SPXMLParser {
 
 	private function getCommentedXML() {
 		$commentedNodes = $this->xPath->query("//comment()");
-		$commentedXML = "";
+		$fullCommentedXML = "";
 
 		foreach($commentedNodes as $commented) {
-			$commentedXML .= $commented->nodeValue;
+			$c = $commented->parentNode; // I didn't find a better variable name...
+			$commentedXML = $commented->textContent;
+
+			while(!is_null($c->tagName)) {
+				$parentNodeStr = $c->tagName;
+				$commentedXML = "<" . $parentNodeStr . ">" . $commentedXML . "</" . $parentNodeStr . ">";
+				$c = $c->parentNode;
+			}
+
+			$fullCommentedXML .= $commentedXML;
 		}
 
-		$commentedXML = "<spwrap>" . $commentedXML . "</spwrap>";
-
-		return $commentedXML;
+		return $fullCommentedXML;
 	}
 }
