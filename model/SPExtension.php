@@ -84,7 +84,7 @@ class SPExtension {
 	/**
 	 * @return string[]
 	 */
-	public function getAllFiles(): array {
+	public function getAllFiles() {
 		return $this->allFiles;
 	}
 }
