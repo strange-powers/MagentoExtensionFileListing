@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017. Julian Vöst
+ * Copyright (c) 2017. Julian Vöst <jv@strange-powers.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
