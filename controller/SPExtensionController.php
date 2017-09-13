@@ -90,11 +90,15 @@ class SPExtensionController {
 
 	/**
 	 * Deletes extension Files
+	 * Important:   If you use this function make sure that the all files
+	 *              are writable otherwise it won't work!!
 	 *
 	 * @param SPExtension $extension
 	 */
 	public function deleteExtension($extension) {
-
+		foreach($extension->getAllFiles() as $fileToDelete) {
+			unlink($fileToDelete);
+		}
 	}
 
 	/**
