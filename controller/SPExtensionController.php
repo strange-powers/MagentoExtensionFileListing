@@ -94,11 +94,21 @@ class SPExtensionController {
 	 *              are writable otherwise it won't work!!
 	 *
 	 * @param SPExtension $extension
+	 *
+	 * @return bool
 	 */
 	public function deleteExtension($extension) {
+		$succeeded = false;
+
 		foreach($extension->getAllFiles() as $fileToDelete) {
-			unlink($fileToDelete);
+			if(is_dir($fileToDelete)) {
+				$succeeded = rmdir($fileToDelete) ;
+			} else if(is_file($fileToDelete)) {
+				$succeeded = unlink($fileToDelete);
+			}
 		}
+
+		return $succeeded;
 	}
 
 	/**
