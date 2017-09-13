@@ -51,10 +51,11 @@ class SPThemeController {
 	public static function getAllThemes() {
 		$themeNames = Mage::getSingleton('core/design_package')->getThemeList();
 		$themes = array();
+		$controller = new SPThemeController();
 
 		foreach($themeNames as $packageName => $themeNames) {
 			foreach($themeNames as $themeName) {
-				$theme = new SPTheme($themeName, $packageName);
+				$theme = $controller->generateTheme($themeName, $packageName);
 				array_push($themes, $theme);
 			}
 		}
