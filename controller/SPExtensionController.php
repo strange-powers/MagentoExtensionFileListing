@@ -52,10 +52,6 @@ class SPExtensionController {
 		return $this->checkPathsInThemes($foundPaths, "checkForSkinFile");
 	}
 
-	private function gatherLocaleFiles($layoutFiles) {
-
-	}
-
 	/**
 	 * Checks if paths do exist in a theme
 	 *
@@ -113,7 +109,7 @@ class SPExtensionController {
 	}
 
 	/**
-	 * Gathers paths of layout found in the config file
+	 * Gathers paths of layout files found in the config file
 	 *
 	 * @param string $configFile
 	 *
@@ -123,22 +119,14 @@ class SPExtensionController {
 		$xmlParser             = new SPXMLParser();
 		$xmlParser->load($configFile);
 		$gatheredLayoutNodes    = $xmlParser->searchForNodesByName("layout");
-		$allThemes              = SPTheme::getAllThemes();
-		$availableLayoutFiles   = array();
+		$foundLayoutFiles       = array();
 
 		foreach($gatheredLayoutNodes as $layoutNode) {
 			foreach($layoutNode->getElementsByTagName("file") as $layoutFileNode) {
-				$layoutFile = $layoutFileNode->textContent;
-				if(!in_array($layoutFile, $availableLayoutFiles)) {
-					foreach($allThemes as $theme) {
-						if($foundLayoutFile = $theme->checkForLayoutFile($layoutFile)) {
-							array_push($availableLayoutFiles, $foundLayoutFile);
-						}
-					}
-				}
+				array_push($foundLayoutFiles, $layoutFileNode->textContent);
 			}
 		}
 
-		return $availableLayoutFiles;
+		return $this->checkPathsInThemes($foundLayoutFiles, "checkForLayoutFile");
 	}
 }
