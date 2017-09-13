@@ -20,7 +20,9 @@
 		echo "Module not found!" . PHP_EOL;
 	}
 
-
-	/*$layoutFile = "/Applications/XAMPP/xamppfiles/htdocs/magento/app/code/community/Brainvire/Ordercomment/etc/config.xml";
+/*
+	$layoutFile = "/Applications/XAMPP/xamppfiles/htdocs/magento/app/design/frontend/base/default/layout/iways_paypalplus.xml";
 	$dom = new SPXMLParser();
-	$dom->load($layoutFile);*/
+	$dom->load($layoutFile);
+	$com = $dom->getCommentedXML();
+	var_dump($com);*/

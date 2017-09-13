@@ -14,54 +14,57 @@ class SPXMLParser {
 
 	/**
 	 * Searches in the entire xml file for the node name (ignores comments)
-	 * @param $nodePath string
+	 *
+	 * @param $nodeName string
+	 *
 	 * @return DOMElement[]
 	 */
-	public function searchForNodesByName($nodePath) {
-		$foundNodes = array();
-		$usualXML = $this->xPath->query("//" . $nodePath);
-
-		/* Searches in the ordinary xml */
-		foreach($usualXML as $node) {
-			array_push($foundNodes, $node);
-		}
-
-		/* Searches in the commented xml */
-		$commentedPlainXML = $this->getCommentedXML();
-		$commentDom = new DOMDocument();
-		$commentDom->loadXML($commentedPlainXML);
-		$commentedXPath = new DOMXPath($commentDom);
-		$commentedXML = $commentedXPath->query("//" . $nodePath);
-
-		foreach($commentedXML as $commentNode) {
-			array_push($foundNodes, $commentNode);
-		}
-
-		return $foundNodes;
+	public function searchForNodesByName($nodeName) {
+		return $this->searchForElements("//" . $nodeName);
 	}
 
+	/**
+	 * Searches in the entire xml file for the attribute name (ignores comments)
+	 *
+	 * @param $attributeName
+	 *
+	 * @return DOMElement[]
+	 */
 	public function searchForNodesByAttribute($attributeName) {
-		$attributeQuery = "//*[@" . $attributeName . "]";
-		$foundNodes = array();
-		$usualXML = $this->xPath->query($attributeQuery);
+		return $this->searchForElements("//*[@" . $attributeName . "]");
+	}
 
+	/**
+	 * Searches in the entire xml file for something queried name (ignores comments)
+	 *
+	 * @param $query
+	 *
+	 * @return DOMElement[]
+	 */
+	private function searchForElements($query) {
+		$foundNodes = array();
+		$usualXML = $this->xPath->query($query);
 		foreach($usualXML as $node) {
 			array_push($foundNodes, $node);
 		}
 
-		$commentedXML = $this->getCommentedXML();
 		$commentDom = new DOMDocument();
-		$commentDom->loadXML($commentedXML);
-		$attributeXPath = new DOMXPath($commentDom);
+		$commentDom->loadXML($this->getCommentedXML());
+		$commentedXPath = new DOMXPath($commentDom);
 
-		foreach($attributeXPath->query($attributeQuery) as $commentNode) {
+		foreach($commentedXPath->query($query) as $commentNode) {
 			array_push($foundNodes, $commentNode);
 		}
 
 		return $foundNodes;
 	}
 
-	private function getCommentedXML() {
+	/**
+	 * Returns a string that contains all commented XML in condition that it is valid
+	 *
+	 * @return string
+	 */
+	public function getCommentedXML() {
 		$commentedNodes = $this->xPath->query("//comment()");
 		$fullCommentedXML = "";
 
@@ -75,9 +78,26 @@ class SPXMLParser {
 				$c = $c->parentNode;
 			}
 
-			$fullCommentedXML .= $commentedXML;
+			if(SPXMLParser::validXML($commentedXML)) {
+				$fullCommentedXML .= $commentedXML;
+			}
 		}
 
 		return $fullCommentedXML;
+	}
+
+	/**
+	 * Determines if XML is valid or not
+	 *
+	 * @param $xml
+	 *
+	 * @return bool
+	 */
+	public static function validXML($xml) {
+		if(simplexml_load_string($xml)) {
+			return true;
+		}
+
+		return false;
 	}
 }
