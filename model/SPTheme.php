@@ -121,6 +121,7 @@ class SPTheme {
 	 * the complete path if the file exists null if not
 	 *
 	 * @param string $file
+	 * @param string $path
 	 *
 	 * @return null|string
 	 */

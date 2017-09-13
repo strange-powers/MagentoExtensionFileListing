@@ -71,21 +71,4 @@ class SPExtension {
 	public function getLocaleFiles() {
 		return $this->localeFiles;
 	}
-
-	public function listAllFiles() {
-		echo "Layout Files:" . PHP_EOL;
-		foreach($this->getLayoutFiles() as $layoutFile) {
-			echo $layoutFile . PHP_EOL;
-		}
-
-		echo "Template Files:" . PHP_EOL;
-		foreach($this->getTemplateFiles() as $templateFile) {
-			echo $templateFile . PHP_EOL;
-		}
-
-		echo "Skin Files:" . PHP_EOL;
-		foreach($this->getSkinFiles() as $skinFile) {
-			echo $skinFile . PHP_EOL;
-		}
-	}
 }

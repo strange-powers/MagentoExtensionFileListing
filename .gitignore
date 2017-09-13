@@ -1,3 +1,5 @@
 .DS_Store
 .idea
 model/.DS_Store
+view/.DS_Store
+controller/.DS_Store
