@@ -32,11 +32,10 @@ class SPExtension {
 
 		$this->allFiles = array(
 			$this->configFile,
-			$this->modelPath,
-			$this->templateFiles,
-			$this->layoutFiles,
-			$this->skinFiles
+			$this->modelPath
 		);
+
+		$this->allFiles = array_merge($this->allFiles, $this->templateFiles, $this->layoutFiles, $this->skinFiles);
 	}
 
 	/**
