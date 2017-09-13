@@ -25,10 +25,10 @@ class SPExtensionController {
 	public function generateExtension($extensionName) {
 		$modelData = array("name"   => $extensionName);
 
-		$configFile = Mage::getModuleDir('etc', $extensionName) . DS . "config.xml";
-		$modelData["configFile"] = $configFile;
+		$modelData["configFile"] = Mage::getBaseDir("etc") . DS . "modules" . DS . $extensionName . ".xml";
 		$modelData["modelPath"] = Mage::getModuleDir("", $extensionName);
 
+		$configFile = Mage::getModuleDir('etc', $extensionName) . DS . "config.xml";
 		$layoutFiles = $this->gatherLayoutFiles($configFile);
 		$modelData["layoutFiles"] = $layoutFiles;
 
@@ -86,6 +86,15 @@ class SPExtensionController {
 		}
 
 		return $foundFiles;
+	}
+
+	/**
+	 * Deletes extension Files
+	 *
+	 * @param SPExtension $extension
+	 */
+	public function deleteExtension($extension) {
+
 	}
 
 	/**

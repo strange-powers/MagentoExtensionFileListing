@@ -18,9 +18,10 @@ class SPExtensionView {
 	/**
 	 * Shows found extensions files
 	 *
-	 * @param $extension
+	 * @param SPExtension $extension
+	 * @param SPExtensionController $extensionController
 	 */
-	public function listExtensionFiles($extension) {
+	public function listExtensionFiles($extension, $extensionController) {
 		echo "Modules XML:" . PHP_EOL;
 		echo $extension->getConfigFile() . PHP_EOL;
 
@@ -41,5 +42,27 @@ class SPExtensionView {
 		foreach($extension->getSkinFiles() as $skinFile) {
 			echo $skinFile . PHP_EOL;
 		}
+
+		$this->askForExtensionDestruction($extension, $extensionController);
+	}
+
+	/**
+	 * Asks the user if he/she wants to delete the found extension files
+	 *
+	 * @param SPExtension $extension
+	 * @param SPExtensionController $extController
+	 */
+	public function askForExtensionDestruction($extension, $extController) {
+		echo "Do want to delete all these files?  Type 'yes' to continue: ";
+		$handle = fopen ("php://stdin","r");
+		$line = fgets($handle);
+		fclose($handle);
+
+		if(trim($line) != 'yes') {
+			echo "Okay LOL!" . PHP_EOL;
+			exit;
+		}
+
+		$extController->deleteExtension($extension);
 	}
 }
