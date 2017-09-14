@@ -89,29 +89,6 @@ class SPExtensionController {
 	}
 
 	/**
-	 * Deletes extension Files
-	 * Important:   If you use this function make sure that the all files
-	 *              are writable otherwise it won't work!!
-	 *
-	 * @param SPExtension $extension
-	 *
-	 * @return bool
-	 */
-	public function deleteExtension($extension) {
-		$succeeded = false;
-
-		foreach($extension->getAllFiles() as $fileToDelete) {
-			if(is_dir($fileToDelete)) {
-				$succeeded = rmdir($fileToDelete) ;
-			} else if(is_file($fileToDelete)) {
-				$succeeded = unlink($fileToDelete);
-			}
-		}
-
-		return $succeeded;
-	}
-
-	/**
 	 * Gathers paths of files found by node in an array of layout files
 	 *
 	 * @param string $layoutFiles
