@@ -42,7 +42,7 @@ class SPXMLParser {
 	/**
 	 * Searches in the entire xml file for the attribute name (ignores comments)
 	 *
-	 * @param $attributeName
+	 * @param $attributeName string
 	 *
 	 * @return DOMElement[]
 	 */
@@ -51,9 +51,9 @@ class SPXMLParser {
 	}
 
 	/**
-	 * Searches in the entire xml file for something queried name (ignores comments)
+	 * Searches in the entire xml file (ignores comments)
 	 *
-	 * @param $query
+	 * @param $query string
 	 *
 	 * @return DOMElement[]
 	 */
@@ -76,7 +76,8 @@ class SPXMLParser {
 	}
 
 	/**
-	 * Returns a string that contains all commented XML in condition that it is valid
+	 * Returns a string that contains alL commented XML
+	 * in condition that it is valid
 	 *
 	 * @return string
 	 */
@@ -94,7 +95,7 @@ class SPXMLParser {
 				$c = $c->parentNode;
 			}
 
-			if(SPXMLParser::validXML($commentedXML)) {
+			if(self::validXML($commentedXML)) {
 				$fullCommentedXML .= $commentedXML;
 			}
 		}
@@ -105,7 +106,7 @@ class SPXMLParser {
 	/**
 	 * Determines if XML is valid or not
 	 *
-	 * @param $xml
+	 * @param $xml string
 	 *
 	 * @return bool
 	 */
@@ -115,5 +116,56 @@ class SPXMLParser {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param $nodes DOMElement[]
+	 * @param $attributeName string
+	 *
+	 * @return string[]
+	 */
+	public static function getAttributeContentFromNodes($nodes, $attributeName) {
+		$output = self::getContentFromNodes($nodes, function($node) use ($attributeName) {
+			return $node->getAttribute($attributeName);
+		});
+
+		return $output;
+	}
+
+	/**
+	 * Returns the text contents of node elements if they
+	 * are not empty or null
+	 *
+	 * @param $nodes DOMElement[]
+	 *
+	 * @return string[]
+	 */
+	public static function getTextContentFromNodes($nodes) {
+		$output = self::getContentFromNodes($nodes, function($node) {
+			return $node->textContent;
+		});
+
+		return $output;
+	}
+
+	/**
+	 * Returns content of lamdba value
+	 *
+	 * @param $nodes DOMElement[]
+	 * @param $lambda Closure
+	 *
+	 * @return string[]
+	 */
+	private static function getContentFromNodes($nodes, $lambda) {
+		$content = array();
+
+		foreach($nodes as $node) {
+			$contentFromNode = $lambda($node);
+			if(!is_null($contentFromNode) && strlen($contentFromNode) > 0) {
+				array_push($content, $contentFromNode);
+			}
+		}
+
+		return $content;
 	}
 }
