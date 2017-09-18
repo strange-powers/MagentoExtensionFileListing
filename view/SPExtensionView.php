@@ -21,7 +21,7 @@ class SPExtensionView {
 	 * @param SPExtension $extension
 	 * @param SPExtensionController $extensionController
 	 */
-	public function listExtensionFiles($extension, $extensionController) {
+	public function listExtensionFiles($extension) {
 		echo "Modules XML:" . PHP_EOL;
 		echo $extension->getConfigFile() . PHP_EOL;
 
