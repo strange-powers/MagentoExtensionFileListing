@@ -61,6 +61,34 @@ class SPExtensionController {
 	private function gatherSkinFiles($layoutFiles) {
 		$foundPaths = $this->gatherPathsFromLayoutFiles($layoutFiles, array("stylesheet", "name"), array());
 
+		$xmlParser = new SPXMLParser();
+
+		foreach($layoutFiles as $file) {
+			$xmlParser->load($file);
+			$helperNode = $xmlParser->searchForNodesByAttribute("helper");
+			foreach($helperNode as $node) {
+				$helperVal       = $node->getAttribute("helper");
+				$helperValeArray = explode("/", $helperVal);
+				$count           = count($helperValeArray);
+				$functionIndex  = $count - 1;
+				$helperFunction  = $helperValeArray[$functionIndex];
+				unset($helperValeArray[$functionIndex]);
+				$helperClassString = implode( "/", $helperValeArray);
+				$helperClass       = Mage::helper( $helperClassString );
+				$skinFile          = $helperClass->$helperFunction();
+
+				if(!is_null($skinFile) && $skinFile !== false) {
+					if (is_array($skinFile)) {
+						foreach ($skinFile as $foundFile) {
+							array_push($foundPaths, $foundFile);
+						}
+					} else {
+						array_push($foundPaths, $skinFile);
+					}
+				}
+			}
+		}
+
 		return $this->checkPathsInThemes($foundPaths, "checkForSkinFile");
 	}
 
@@ -105,15 +133,15 @@ class SPExtensionController {
 			$xmlParser->load($layoutFile);
 
 			foreach($attributeNames as $attributeName) {
-				foreach($xmlParser->searchForNodesByAttribute($attributeName) as $attributeNode) {
-					array_push($foundPaths, $attributeNode->getAttribute($attributeName));
-				}
+				$attributeNodes = $xmlParser->searchForNodesByAttribute($attributeName);
+				$nodeValues = SPXMLParser::getAttributeContentFromNodes($attributeNodes, $attributeName);
+				$foundPaths = array_merge($nodeValues, $foundPaths);
 			}
 
 			foreach($nodeNames as $nodeName) {
-				foreach($xmlParser->searchForNodesByName($nodeName) as $node) {
-					array_push($foundPaths, $node->nodeValue);
-				}
+				$nameNodes = $xmlParser->searchForNodesByName($nodeName);
+				$nodeValues = SPXMLParser::getTextContentFromNodes($nameNodes);
+				$foundPaths = array_merge($nodeValues, $foundPaths);
 			}
 		}
 
