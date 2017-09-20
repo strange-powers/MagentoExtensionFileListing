@@ -55,22 +55,22 @@ class SPExtension {
 	/**
 	 * @return string[]
 	 */
-	public function getTemplateFiles() {
-		return $this->templateFiles;
+	public function getTemplateFiles($area) {
+		return $this->templateFiles[$area];
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getLayoutFiles() {
-		return $this->layoutFiles;
+	public function getLayoutFiles($area) {
+		return $this->layoutFiles[$area];
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getSkinFiles() {
-		return $this->skinFiles;
+	public function getSkinFiles($area) {
+		return $this->skinFiles[$area];
 	}
 
 	/**

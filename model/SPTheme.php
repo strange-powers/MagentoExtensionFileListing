@@ -15,6 +15,8 @@
  */
 
 class SPTheme {
+	public static $areas = array("adminhtml", "frontend");
+
 	private $themeName;
 	private $themePath;
 	private $templatePath;
@@ -25,11 +27,11 @@ class SPTheme {
 
 	function __construct($data) {
 		$this->themeName = $data["themeName"];
+		$this->packageName = $data["packageName"];
 		$this->themePath = $data["themePath"];
 		$this->templatePath = $data["templatePath"];
 		$this->layoutPath = $data["layoutPath"];
 		$this->skinPath = $data["skinPath"];
-		$this->packageName = $data["packageName"];
 	}
 
 	/**
@@ -50,26 +52,35 @@ class SPTheme {
 
 	/**
 	 * Get the themes template path
+	 *
+	 * @param $area string
+	 *
 	 * @return String
 	 */
-	public function getTemplatePath() {
-		return $this->templatePath;
+	public function getTemplatePath($area) {
+		return $this->templatePath[$area];
 	}
 
 	/**
 	 * Get the themes layout path
+	 *
+	 * @param $area string
+	 *
 	 * @return String
 	 */
-	public function getLayoutPath() {
-		return $this->layoutPath;
+	public function getLayoutPath($area) {
+		return $this->layoutPath[$area];
 	}
 
 	/**
 	 * Get the themes skin path
+	 *
+	 * @param $area string
+	 *
 	 * @return String
 	 */
-	public function getSkinPath() {
-		return $this->skinPath;
+	public function getSkinPath($area) {
+		return $this->skinPath[$area];
 	}
 
 	/**
@@ -84,36 +95,60 @@ class SPTheme {
 	 * Checks if file exists in layout directory and returns
 	 * the complete path if the file exists null if not
 	 *
+	 * @param string $area
 	 * @param string $file
 	 *
-	 * @return null|string
+	 * @return string[]
 	 */
-	public function checkForLayoutFile($file) {
-		return $this->checkForFileInPath($file, $this->getLayoutPath());
+	public function checkForLayoutFile($file, $area) {
+		$layoutFiles = array();
+
+		$checkedFile = $this->checkForFileInPath($file, $this->getLayoutPath($area));
+		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+			array_push($layoutFiles, $checkedFile);
+		}
+
+		return $layoutFiles;
 	}
 
 	/**
 	 * Checks if file exists in template directory and returns
 	 * the complete path if the file exists null if not
 	 *
+	 * @param string $area
 	 * @param string $file
 	 *
-	 * @return null|string
+	 * @return string[]
 	 */
-	public function checkForTemplateFile($file) {
-		return $this->checkForFileInPath($file, $this->getTemplatePath());
+	public function checkForTemplateFile($file, $area) {
+		$layoutFiles = array();
+
+		$checkedFile = $this->checkForFileInPath($file, $this->getTemplatePath($area));
+		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+			array_push($layoutFiles, $checkedFile);
+		}
+
+		return $layoutFiles;
 	}
 
 	/**
 	 * Checks if file exists in skin directory and returns
 	 * the complete path if the file exists null if not
 	 *
+	 * @param string $area
 	 * @param string $file
 	 *
-	 * @return null|string
+	 * @return string[]
 	 */
-	public function checkForSkinFile($file) {
-		return $this->checkForFileInPath($file, $this->getSkinPath());
+	public function checkForSkinFile($file, $area) {
+		$layoutFiles = array();
+
+		$checkedFile = $this->checkForFileInPath($file, $this->getSkinPath($area));
+		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+			array_push($layoutFiles, $checkedFile);
+		}
+
+		return $layoutFiles;
 	}
 
 	/**
@@ -127,11 +162,11 @@ class SPTheme {
 	 */
 	private function checkForFileInPath($file, $path) {
 		if(!is_null($path)) {
-			$iterator = new RecursiveDirectoryIterator( $path );
-			foreach ( new RecursiveIteratorIterator( $iterator ) as $child ) {
-				if ( $child->isDir() ) {
+			$iterator = new RecursiveDirectoryIterator($path);
+			foreach(new RecursiveIteratorIterator($iterator) as $child) {
+				if($child->isDir()) {
 					$filePath = $child->getPath() . DS . $file;
-					if ( file_exists( $filePath ) ) {
+					if(file_exists($filePath)) {
 						return $filePath;
 					}
 				}
