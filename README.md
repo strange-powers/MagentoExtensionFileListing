@@ -15,12 +15,12 @@ Where the name of the extension has to be the Magento extension identifier.
 To get the Magento extension identifier navigate to /path/to/magento/app/etc/modules.
 The XML files name of the extension you want to list is the identifier.
 
-###Example
+### Example
 Here is an example for the PayPal Plus Payment Extension which usually comes with a fresh Magento installation.
 
 ```php run.php Iways_PayPalPlus```
 
-##Bugs
+## Bugs
 
 Be very careful with this tool. It won't show you all of the files the extension contains.
 
