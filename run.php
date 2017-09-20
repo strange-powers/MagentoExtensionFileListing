@@ -20,7 +20,7 @@
 		$extension = $extensionController->generateExtension($moduleName);
 
 		$view = new SPExtensionView();
-		$view->listExtensionFiles($extension, $extensionController);
+		$view->listExtensionFiles($extension);
 	} else {
 		echo "Module not found!" . PHP_EOL;
 	}
