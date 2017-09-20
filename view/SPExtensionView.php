@@ -19,7 +19,6 @@ class SPExtensionView {
 	 * Shows found extensions files
 	 *
 	 * @param SPExtension $extension
-	 * @param SPExtensionController $extensionController
 	 */
 	public function listExtensionFiles($extension) {
 		echo "Modules XML:" . PHP_EOL;
@@ -28,19 +27,25 @@ class SPExtensionView {
 		echo "Model Path:" . PHP_EOL;
 		echo $extension->getModelPath() . PHP_EOL;
 
-		echo "Layout Files:" . PHP_EOL;
-		foreach($extension->getLayoutFiles() as $layoutFile) {
-			echo $layoutFile . PHP_EOL;
-		}
+		foreach(SPTheme::$areas as $area) {
+			echo "-------------------------" . PHP_EOL;
 
-		echo "Template Files:" . PHP_EOL;
-		foreach($extension->getTemplateFiles() as $templateFile) {
-			echo $templateFile . PHP_EOL;
-		}
+			echo "Area: " . $area . PHP_EOL;
 
-		echo "Skin Files:" . PHP_EOL;
-		foreach($extension->getSkinFiles() as $skinFile) {
-			echo $skinFile . PHP_EOL;
+			echo "Layout Files:" . PHP_EOL;
+			foreach($extension->getLayoutFiles($area) as $layoutFile) {
+				echo $layoutFile . PHP_EOL;
+			}
+
+			echo "Template Files:" . PHP_EOL;
+			foreach($extension->getTemplateFiles($area) as $templateFile) {
+				echo $templateFile . PHP_EOL;
+			}
+
+			echo "Skin Files:" . PHP_EOL;
+			foreach($extension->getSkinFiles($area) as $skinFile) {
+				echo $skinFile . PHP_EOL;
+			}
 		}
 	}
 }
