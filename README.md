@@ -6,7 +6,7 @@ It's supposed to be used from the command line interface.
 ## Usage
 Make sure that you moved the folder in the root directory of your Magento installation.
 
-First of all navigate into the magento-extension-destruction directory and use the following commands to start the script:
+First of all navigate into the tools directory and use the following commands to start the script:
 
 ```php run.php <name-of-the-extension>```
 
