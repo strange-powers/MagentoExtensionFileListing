@@ -32,29 +32,31 @@ class SPThemeController {
 		);
 
 		$infoArr = array(
-			"_area"		=> "frontend",
 			"_relative" => false,
 			"_package"	=> $packageName,
 			"_theme"	=> $themeName
 		);
 
-		$themeData["themePath"] = $designSingleton->getBaseDir($infoArr);
-		$themeData["skinPath"] = $designSingleton->getSkinBaseDir($infoArr);
+		foreach(SPTheme::$areas as $area) {
+			$infoArr["_area"] = $area;
 
-		if(!file_exists($themeData["skinPath"])) {
-			$themeData["skinPath"] = null;
+			$themeData["themePath"][$area] = $designSingleton->getBaseDir($infoArr);
+			$themeData["skinPath"][$area] = $designSingleton->getSkinBaseDir($infoArr);
+
+			if(!file_exists($themeData["skinPath"][$area])) {
+				$themeData["skinPath"][$area] = null;
+			}
+
+			$layoutPath = $themeData["themePath"][$area] . "layout";
+			if(file_exists($layoutPath)) {
+				$themeData["layoutPath"][$area] = $layoutPath;
+			}
+
+			$templatePath = $themeData["themePath"][$area] . "template";
+			if(file_exists($layoutPath)) {
+				$themeData["templatePath"][$area] = $templatePath;
+			}
 		}
-
-		$layoutPath = $themeData["themePath"] . "layout";
-		if(file_exists($layoutPath)) {
-			$themeData["layoutPath"] = $layoutPath;
-		}
-
-		$templatePath = $themeData["themePath"] . "template";
-		if(file_exists($layoutPath)) {
-			$themeData["templatePath"] = $templatePath;
-		}
-
 		return new SPTheme($themeData);
 	}
 

@@ -58,32 +58,34 @@ class SPExtensionController {
 	 *
 	 * @return string[]
 	 */
-	private function gatherSkinFiles($layoutFiles) {
-		$foundPaths = $this->gatherPathsFromLayoutFiles($layoutFiles, array("stylesheet", "name"), array());
+	private function gatherSkinFiles($areaLayoutFiles) {
+		$foundPaths = $this->gatherPathsFromLayoutFiles( $areaLayoutFiles, array( "stylesheet", "name" ), array() );
 
 		$xmlParser = new SPXMLParser();
 
-		foreach($layoutFiles as $file) {
-			$xmlParser->load($file);
-			$helperNode = $xmlParser->searchForNodesByAttribute("helper");
-			foreach($helperNode as $node) {
-				$helperVal       = $node->getAttribute("helper");
-				$helperValeArray = explode("/", $helperVal);
-				$count           = count($helperValeArray);
-				$functionIndex  = $count - 1;
-				$helperFunction  = $helperValeArray[$functionIndex];
-				unset($helperValeArray[$functionIndex]);
-				$helperClassString = implode( "/", $helperValeArray);
-				$helperClass       = Mage::helper( $helperClassString );
-				$skinFile          = $helperClass->$helperFunction();
+		foreach ( $areaLayoutFiles as $area => $layoutFiles ) {
+			foreach ( $layoutFiles as $file ) {
+				$xmlParser->load( $file );
+				$helperNode = $xmlParser->searchForNodesByAttribute( "helper" );
+				foreach ( $helperNode as $node ) {
+					$helperVal       = $node->getAttribute( "helper" );
+					$helperValeArray = explode( "/", $helperVal );
+					$count           = count( $helperValeArray );
+					$functionIndex   = $count - 1;
+					$helperFunction  = $helperValeArray[ $functionIndex ];
+					unset( $helperValeArray[ $functionIndex ] );
+					$helperClassString = implode( "/", $helperValeArray );
+					$helperClass       = Mage::helper( $helperClassString );
+					$skinFile          = $helperClass->$helperFunction();
 
-				if(!is_null($skinFile) && $skinFile !== false) {
-					if (is_array($skinFile)) {
-						foreach ($skinFile as $foundFile) {
-							array_push($foundPaths, $foundFile);
+					if ( ! is_null( $skinFile ) && $skinFile !== false ) {
+						if ( is_array( $skinFile ) ) {
+							foreach ( $skinFile as $foundFile ) {
+								array_push( $foundPaths[$area], $foundFile );
+							}
+						} else {
+							array_push( $foundPaths[$area], $skinFile );
 						}
-					} else {
-						array_push($foundPaths, $skinFile);
 					}
 				}
 			}
@@ -101,13 +103,21 @@ class SPExtensionController {
 	 * @return string[]
 	 */
 	private function checkPathsInThemes($paths, $checkFunction) {
-		$foundFiles = array();
+		$foundFiles = array(
+			"frontend"  => array(),
+			"adminhtml" => array()
+		);
 
 		foreach (SPThemeController::getAllThemes() as $theme) {
-			foreach ($paths as $path) {
-				if ($foundFile = $theme->$checkFunction($path)) {
-					if (!in_array($foundFile, $foundFiles)) {
-						array_push($foundFiles, $foundFile);
+			foreach ($paths as $area => $areaPaths) {
+				foreach($areaPaths as $path) {
+					$foundPaths = $theme->$checkFunction($path, $area);
+					if (count($foundPaths) > 0) {
+						foreach ($foundPaths as $foundFile) {
+							if (!in_array($foundFile, $foundFiles[$area])) {
+								array_push($foundFiles[$area], $foundFile);
+							}
+						}
 					}
 				}
 			}
@@ -119,29 +129,34 @@ class SPExtensionController {
 	/**
 	 * Gathers paths of files found by node in an array of layout files
 	 *
-	 * @param string $layoutFiles
+	 * @param array $areaLayoutFiles
 	 * @param array $nodeNames
 	 * @param array $attributeNames
 	 *
 	 * @return string[]
 	 */
-	private function gatherPathsFromLayoutFiles($layoutFiles, $nodeNames, $attributeNames) {
+	private function gatherPathsFromLayoutFiles($areaLayoutFiles, $nodeNames, $attributeNames) {
 		$xmlParser             = new SPXMLParser();
-		$foundPaths            = array();
+		$foundPaths      = array(
+			"frontend"  => array(),
+			"adminhtml" => array()
+		);
 
-		foreach ($layoutFiles as $layoutFile) {
-			$xmlParser->load($layoutFile);
+		foreach($areaLayoutFiles as $areaKey => $layoutFiles) {
+			foreach ( $layoutFiles as $layoutFile ) {
+				$xmlParser->load( $layoutFile );
 
-			foreach($attributeNames as $attributeName) {
-				$attributeNodes = $xmlParser->searchForNodesByAttribute($attributeName);
-				$nodeValues = SPXMLParser::getAttributeContentFromNodes($attributeNodes, $attributeName);
-				$foundPaths = array_merge($nodeValues, $foundPaths);
-			}
+				foreach ( $attributeNames as $attributeName ) {
+					$attributeNodes = $xmlParser->searchForNodesByAttribute( $attributeName );
+					$nodeValues     = SPXMLParser::getAttributeContentFromNodes( $attributeNodes, $attributeName );
+					$foundPaths[$areaKey] = array_merge( $nodeValues, $foundPaths[$areaKey] );
+				}
 
-			foreach($nodeNames as $nodeName) {
-				$nameNodes = $xmlParser->searchForNodesByName($nodeName);
-				$nodeValues = SPXMLParser::getTextContentFromNodes($nameNodes);
-				$foundPaths = array_merge($nodeValues, $foundPaths);
+				foreach ( $nodeNames as $nodeName ) {
+					$nameNodes  = $xmlParser->searchForNodesByName( $nodeName );
+					$nodeValues = SPXMLParser::getTextContentFromNodes( $nameNodes );
+					$foundPaths[$areaKey] = array_merge($nodeValues, $foundPaths[$areaKey]);
+				}
 			}
 		}
 
@@ -158,12 +173,23 @@ class SPExtensionController {
 	private function gatherLayoutFiles($configFile) {
 		$xmlParser             = new SPXMLParser();
 		$xmlParser->load($configFile);
-		$gatheredLayoutNodes    = $xmlParser->searchForNodesByName("layout");
-		$foundLayoutFiles       = array();
+		$foundLayoutFiles       = array(
+			"frontend"  => array(),
+			"adminhtml" => array()
+		);
 
-		foreach($gatheredLayoutNodes as $layoutNode) {
-			foreach($layoutNode->getElementsByTagName("file") as $layoutFileNode) {
-				array_push($foundLayoutFiles, $layoutFileNode->textContent);
+
+		foreach(SPTheme::$areas as $area) {
+			$areaNodes = $xmlParser->searchForNodesByName($area);
+
+			foreach($areaNodes as $areaNode) {
+				$gatheredLayoutNodes = $areaNode->getElementsByTagName( "layout" );
+
+				foreach ( $gatheredLayoutNodes as $layoutNode ) {
+					foreach ( $layoutNode->getElementsByTagName( "file" ) as $layoutFileNode ) {
+						array_push( $foundLayoutFiles[ $area ], $layoutFileNode->textContent );
+					}
+				}
 			}
 		}
 
