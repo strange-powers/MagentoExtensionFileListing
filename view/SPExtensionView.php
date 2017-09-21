@@ -27,6 +27,13 @@ class SPExtensionView {
 		echo "Model Path:" . PHP_EOL;
 		echo $extension->getModelPath() . PHP_EOL;
 
+		echo "JS Path:" . PHP_EOL;
+		foreach($extension->getJSFiles() as $jsFile) {
+			echo $jsFile . PHP_EOL;
+		}
+
+		echo PHP_EOL;
+
 		foreach(SPTheme::$areas as $area) {
 			echo "-------------------------" . PHP_EOL;
 
