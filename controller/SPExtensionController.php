@@ -32,6 +32,8 @@ class SPExtensionController {
 		$layoutFiles = $this->gatherLayoutFiles($configFile);
 		$modelData["layoutFiles"] = $layoutFiles;
 
+		$modelData["jsFiles"] = $this->gatherJSFiles($layoutFiles);
+
 		$modelData["templateFiles"] = $this->gatherTemplateFiles($layoutFiles);
 		$modelData["skinFiles"] = $this->gatherSkinFiles($layoutFiles);
 
@@ -54,7 +56,7 @@ class SPExtensionController {
 	/**
 	 * Returns the found skin files
 	 *
-	 * @param string $layoutFiles
+	 * @param array $areaLayoutFiles
 	 *
 	 * @return string[]
 	 */
@@ -66,25 +68,18 @@ class SPExtensionController {
 		foreach ( $areaLayoutFiles as $area => $layoutFiles ) {
 			foreach ( $layoutFiles as $file ) {
 				$xmlParser->load( $file );
-				$helperNode = $xmlParser->searchForNodesByAttribute( "helper" );
-				foreach ( $helperNode as $node ) {
-					$helperVal       = $node->getAttribute( "helper" );
-					$helperValeArray = explode( "/", $helperVal );
-					$count           = count( $helperValeArray );
-					$functionIndex   = $count - 1;
-					$helperFunction  = $helperValeArray[ $functionIndex ];
-					unset( $helperValeArray[ $functionIndex ] );
-					$helperClassString = implode( "/", $helperValeArray );
-					$helperClass       = Mage::helper( $helperClassString );
-					$skinFile          = $helperClass->$helperFunction();
+				$helperNodes = $xmlParser->searchForNodesByAttribute( "helper" );
 
-					if ( ! is_null( $skinFile ) && $skinFile !== false ) {
-						if ( is_array( $skinFile ) ) {
-							foreach ( $skinFile as $foundFile ) {
+				foreach ( $helperNodes as $helperNode ) {
+					$helperInfo = $helperNode->getAttribute( "helper" );
+					$info = $this->gatherHelperInfo($helperInfo);
+					if ( ! is_null( $info ) && $info !== false ) {
+						if ( is_array( $info ) ) {
+							foreach ( $info as $foundFile ) {
 								array_push( $foundPaths[$area], $foundFile );
 							}
 						} else {
-							array_push( $foundPaths[$area], $skinFile );
+							array_push( $foundPaths[$area], $info );
 						}
 					}
 				}
@@ -126,6 +121,51 @@ class SPExtensionController {
 		return $foundFiles;
 	}
 
+	private function gatherJSFiles( $areaLayoutFiles ) {
+		$xmlParser = new SPXMLParser();
+		$gatheredFiles = array();
+
+		$pathCheckFunc = function($file) {
+			if(!is_null($file)) {
+				$fullPath = Mage::getBaseDir() . DS . "js" . DS . $file;
+				if(file_exists($fullPath)) {
+					return $fullPath;
+				}
+			}
+		};
+
+		foreach ( $areaLayoutFiles as $area => $layoutFiles ) {
+			foreach ( $layoutFiles as $file ) {
+				$xmlParser->load($file);
+				$jsAttributeNodes = $xmlParser->searchForElementByAttributeContainsValue("method", "addJs");
+
+				foreach($jsAttributeNodes as $attributeNode) {
+					$scriptTags = $attributeNode->getElementsByTagName("script");
+					foreach($scriptTags as $tag) {
+						$file = null;
+
+						if($tagAttribute = $tag->getAttribute("helper")) {
+							$file = $this->gatherHelperInfo($tagAttribute);
+						} else if($tagValue = $tag->getElementsByTagName("type")) {
+							if(strpos($tagValue->item(0)->textContent, "skin") === false) {
+								$file = $tag->getElementsByTagName("name")->item(0)->textContent;
+							}
+						}
+
+						array_push($gatheredFiles, $pathCheckFunc($file));
+					}
+				}
+
+				$strangeJSFiles = $xmlParser->searchForNodesByName("file"); // In hope for a better variable name
+				foreach($strangeJSFiles as $strangeJSFile) {
+					array_push($gatheredFiles, $pathCheckFunc($strangeJSFile->textContent));
+				}
+			}
+		}
+
+		return $gatheredFiles;
+	}
+	
 	/**
 	 * Gathers paths of files found by node in an array of layout files
 	 *
@@ -163,6 +203,19 @@ class SPExtensionController {
 		return $foundPaths;
 	}
 
+	private function gatherHelperInfo( $helperInfo ) {
+		$helperValeArray = explode( "/", $helperInfo );
+		$count           = count( $helperValeArray );
+		$functionIndex   = $count - 1;
+		$helperFunction  = $helperValeArray[ $functionIndex ];
+		unset( $helperValeArray[ $functionIndex ] );
+		$helperClassString = implode( "/", $helperValeArray );
+		$helperClass       = Mage::helper( $helperClassString );
+		$gatheredInfo      = $helperClass->$helperFunction();
+
+		return $gatheredInfo;
+	}
+	
 	/**
 	 * Gathers paths of layout files found in the config file
 	 *
