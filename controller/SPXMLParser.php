@@ -104,6 +104,28 @@ class SPXMLParser {
 	}
 
 	/**
+	 * Searches nodes with the given attribute that matches the give value
+	 *
+	 * @param string $attribute
+	 * @param string $value
+	 *
+	 * @return DOMElement[]
+	 */
+	public function searchForElementByAttributeContainsValue($attribute, $value) {
+		$foundNodes = array();
+		$nodesWithAttribute = $this->searchForNodesByAttribute($attribute);
+
+		foreach($nodesWithAttribute as $node) {
+			$nodeAttributeValue = $node->getAttribute($attribute);
+			if(strpos($nodeAttributeValue, $value) !== false) {
+				array_push($foundNodes, $node);
+			}
+		};
+
+		return $foundNodes;
+	}
+
+	/**
 	 * Determines if XML is valid or not
 	 *
 	 * @param $xml string
