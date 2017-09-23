@@ -30,7 +30,7 @@ class SPExtension {
 		$this->templateFiles    = $data["templateFiles"];
 		$this->layoutFiles      = $data["layoutFiles"];
 		$this->skinFiles        = $data["skinFiles"];
-		$this->jsFiles        = $data["jsFiles"];
+		$this->jsFiles          = $data["jsFiles"];
 
 		$this->allFiles = array(
 			$this->configFile,
@@ -41,6 +41,8 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns the config file that is placed in app/etc/modules
+	 *
 	 * @return string
 	 */
 	public function getConfigFile() {
@@ -48,6 +50,8 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns the patch to the extension logic
+	 *
 	 * @return string[]
 	 */
 	public function getModelPath() {
@@ -55,6 +59,10 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns frontend or adminhtml template files
+	 *
+	 * @param string $area
+	 *
 	 * @return string[]
 	 */
 	public function getTemplateFiles($area) {
@@ -62,6 +70,10 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns frontend or adminhtml layout files
+	 *
+	 * @param string $area
+	 *
 	 * @return string[]
 	 */
 	public function getLayoutFiles($area) {
@@ -69,6 +81,10 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns the frontend or adminhtml skin files
+	 *
+	 * @param string $area
+	 *
 	 * @return string[]
 	 */
 	public function getSkinFiles($area) {
@@ -76,6 +92,8 @@ class SPExtension {
 	}
 
 	/**
+	 * frontend or adminhtml
+	 *
 	 * @return string[]
 	 */
 	public function getLocaleFiles() {
@@ -83,6 +101,8 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns files which a located in js/
+	 *
 	 * @return string[]
 	 */
 	public function getJSFiles() {
@@ -90,6 +110,8 @@ class SPExtension {
 	}
 
 	/**
+	 * Returns all files
+	 *
 	 * @return string[]
 	 */
 	public function getAllFiles() {
