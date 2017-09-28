@@ -33,7 +33,10 @@ class SPExtensionController {
 		$modelData["modelPath"] = Mage::getModuleDir("", $extensionName);
 
 		$configFile = Mage::getModuleDir('etc', $extensionName) . DS . "config.xml";
-		$layoutFiles = $this->gatherLayoutFiles($configFile);
+		$configXmlParser = new SPXMLParser();
+		$configXmlParser->load($configFile);
+
+		$layoutFiles = $this->gatherLayoutFiles($configXmlParser);
 		$modelData["layoutFiles"] = $layoutFiles;
 
 		/* Be careful the lambda function is placed in a loop */
@@ -138,17 +141,8 @@ class SPExtensionController {
 	 */
 	private function gatherJSFiles( $xmlParser ) {
 		$gatheredFiles = array();
-
-		$pathCheckFunc = function($file) {
-			if(!is_null($file)) {
-				$fullPath = Mage::getBaseDir() . DS . "js" . DS . $file;
-				if(file_exists($fullPath)) {
-					return $fullPath;
-				}
-			}
-		};
-
 		$jsAttributeNodes = $xmlParser->searchForElementByAttributeContainsValue("method", "addJs");
+		$jsAttributeNodes = array_merge($jsAttributeNodes, $xmlParser->searchForNodesByName("file"));
 
 		foreach($jsAttributeNodes as $attributeNode) {
 			$scriptTags = $attributeNode->getElementsByTagName("script");
@@ -163,13 +157,13 @@ class SPExtensionController {
 					}
 				}
 
-				array_push($gatheredFiles, $pathCheckFunc($file));
+				if(!is_null($file)) {
+					$fullPath = Mage::getBaseDir() . DS . "js" . DS . $file;
+					if(file_exists($fullPath)) {
+						array_push($gatheredFiles, $fullPath);
+					}
+				}
 			}
-		}
-
-		$strangeJSFiles = $xmlParser->searchForNodesByName("file"); // In hope for a better variable name
-		foreach($strangeJSFiles as $strangeJSFile) {
-			array_push($gatheredFiles, $pathCheckFunc($strangeJSFile->textContent));
 		}
 
 		return $gatheredFiles;
@@ -251,13 +245,11 @@ class SPExtensionController {
 	/**
 	 * Gathers paths of layout files found in the config file
 	 *
-	 * @param string $configFile
+	 * @param SPXMLParser $configXmlParser
 	 *
 	 * @return string[]
 	 */
-	private function gatherLayoutFiles($configFile) {
-		$xmlParser             = new SPXMLParser();
-		$xmlParser->load($configFile);
+	private function gatherLayoutFiles($configXmlParser) {
 		$foundLayoutFiles       = array(
 			"frontend"  => array(),
 			"adminhtml" => array()
@@ -265,7 +257,7 @@ class SPExtensionController {
 
 
 		foreach(SPTheme::$areas as $area) {
-			$areaNodes = $xmlParser->searchForNodesByName($area);
+			$areaNodes = $configXmlParser->searchForNodesByName($area);
 
 			foreach($areaNodes as $areaNode) {
 				$gatheredLayoutNodes = $areaNode->getElementsByTagName( "layout" );
@@ -277,7 +269,6 @@ class SPExtensionController {
 				}
 			}
 		}
-
 		return $this->checkPathsInThemes($foundLayoutFiles, "checkForLayoutFile");
 	}
 }

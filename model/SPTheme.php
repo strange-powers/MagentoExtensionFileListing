@@ -103,9 +103,11 @@ class SPTheme {
 	public function checkForLayoutFile($file, $area) {
 		$layoutFiles = array();
 
-		$checkedFile = $this->checkForFileInPath($file, $this->getLayoutPath($area));
-		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
-			array_push($layoutFiles, $checkedFile);
+		if($areaPath = $this->getLayoutPath($area)) {
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath);
+			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+				array_push($layoutFiles, $checkedFile);
+			}
 		}
 
 		return $layoutFiles;
@@ -123,10 +125,13 @@ class SPTheme {
 	public function checkForTemplateFile($file, $area) {
 		$layoutFiles = array();
 
-		$checkedFile = $this->checkForFileInPath($file, $this->getTemplatePath($area));
-		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
-			array_push($layoutFiles, $checkedFile);
+		if($areaPath = $this->getTemplatePath($area)) {
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath, true);
+			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+				array_push($layoutFiles, $checkedFile);
+			}
 		}
+
 
 		return $layoutFiles;
 	}
@@ -143,36 +148,13 @@ class SPTheme {
 	public function checkForSkinFile($file, $area) {
 		$layoutFiles = array();
 
-		$checkedFile = $this->checkForFileInPath($file, $this->getSkinPath($area));
-		if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
-			array_push($layoutFiles, $checkedFile);
-		}
-
-		return $layoutFiles;
-	}
-
-	/**
-	 * Checks if file exists in the given directory and returns
-	 * the complete path if the file exists null if not
-	 *
-	 * @param string $file
-	 * @param string $path
-	 *
-	 * @return null|string
-	 */
-	private function checkForFileInPath($file, $path) {
-		if(!is_null($path)) {
-			$iterator = new RecursiveDirectoryIterator($path);
-			foreach(new RecursiveIteratorIterator($iterator) as $child) {
-				if($child->isDir()) {
-					$filePath = $child->getPath() . DS . $file;
-					if(file_exists($filePath)) {
-						return $filePath;
-					}
-				}
+		if($areaPath = $this->getSkinPath($area)) {
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath);
+			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
+				array_push($layoutFiles, $checkedFile);
 			}
 		}
 
-		return null;
+		return $layoutFiles;
 	}
 }

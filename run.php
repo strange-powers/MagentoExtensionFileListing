@@ -2,6 +2,8 @@
 	require_once '../app/Mage.php';
 	Mage::app();
 
+	require_once "./utils/SPDirectoryHelper.php";
+
 	require_once './model/SPExtension.php';
 	require_once './model/SPTheme.php';
 
