@@ -39,6 +39,8 @@ class SPExtensionController {
 		$layoutFiles = $this->gatherLayoutFiles($configXmlParser);
 		$modelData["layoutFiles"] = $layoutFiles;
 
+		$modelData["translationFiles"] = $this->gatherTranslationFiles($configXmlParser);
+
 		/* Be careful the lambda function is placed in a loop */
 		$lambdaReturnArr = array(
 			"templateFiles" => array(),
@@ -56,6 +58,33 @@ class SPExtensionController {
 		$modelData["jsFiles"] = $gatheredFiles["jsFiles"];
 
 		return new SPExtension($modelData);
+	}
+
+	/**
+	 * Gathers translation files found in the config file
+	 *
+	 * @param SPXMLParser $configXmlParser
+	 *
+	 * @return string[]
+	 */
+	private function gatherTranslationFiles($configXmlParser) {
+		$foundTranslationFiles  = array();
+		$translateFilesNodes    = $configXmlParser->searchForNodesByName("translate/modules/*/files");
+
+		foreach($translateFilesNodes as $translateFilesNode) {
+			foreach($translateFilesNode->childNodes as $translateFile) {
+				if($translateFile->nodeName != "#text") {
+					$filePaths = SPDirectoryHelper::getSingleInstance()->searchForFileOccurrence($translateFile->textContent, Mage::getBaseDir("app") . DS . "locale");
+					foreach($filePaths as $path) {
+						if(!in_array($path, $foundTranslationFiles)) {
+							array_push($foundTranslationFiles, $path);
+						}
+					}
+				}
+			}
+		}
+
+		return $foundTranslationFiles;
 	}
 
 	/**

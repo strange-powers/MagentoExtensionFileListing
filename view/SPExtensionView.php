@@ -32,6 +32,11 @@ class SPExtensionView {
 			echo $jsFile . PHP_EOL;
 		}
 
+		echo "Locale Path:" . PHP_EOL;
+		foreach($extension->getLocaleFiles() as $localeFile) {
+			echo $localeFile . PHP_EOL;
+		}
+
 		echo PHP_EOL;
 
 		foreach(SPTheme::$areas as $area) {
