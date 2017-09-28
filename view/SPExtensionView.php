@@ -27,37 +27,35 @@ class SPExtensionView {
 		echo "Model Path:" . PHP_EOL;
 		echo $extension->getModelPath() . PHP_EOL;
 
-		echo "JS Path:" . PHP_EOL;
-		foreach($extension->getJSFiles() as $jsFile) {
-			echo $jsFile . PHP_EOL;
-		}
-
-		echo "Locale Path:" . PHP_EOL;
-		foreach($extension->getLocaleFiles() as $localeFile) {
-			echo $localeFile . PHP_EOL;
-		}
-
-		echo PHP_EOL;
+		$this->filesOutput($extension->getJSFiles(), "JS");
+		$this->filesOutput($extension->getLocaleFiles(), "Locale");
 
 		foreach(SPTheme::$areas as $area) {
 			echo "-------------------------" . PHP_EOL;
 
 			echo "Area: " . $area . PHP_EOL;
 
-			echo "Layout Files:" . PHP_EOL;
-			foreach($extension->getLayoutFiles($area) as $layoutFile) {
-				echo $layoutFile . PHP_EOL;
-			}
+			$this->filesOutput($extension->getLayoutFiles($area), "Layout");
+			$this->filesOutput($extension->getTemplateFiles($area), "Template");
+			$this->filesOutput($extension->getSkinFiles($area), "Skin");
+		}
+	}
 
-			echo "Template Files:" . PHP_EOL;
-			foreach($extension->getTemplateFiles($area) as $templateFile) {
-				echo $templateFile . PHP_EOL;
-			}
+	/**
+	 * Output of file section
+	 *
+	 * @param string $files
+	 * @param string $name
+	 */
+	private function filesOutput($files, $name) {
+		echo $name . " Files:" . PHP_EOL;
 
-			echo "Skin Files:" . PHP_EOL;
-			foreach($extension->getSkinFiles($area) as $skinFile) {
-				echo $skinFile . PHP_EOL;
+		if(count($files) > 0) {
+			foreach($files as $file) {
+				echo $file . PHP_EOL;
 			}
+		} else {
+			echo "No Files detected" . PHP_EOL;
 		}
 	}
 }
