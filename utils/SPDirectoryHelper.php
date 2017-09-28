@@ -32,15 +32,44 @@ class SPDirectoryHelper {
 	}
 
 	/**
+	 * Checks if the file exists one ore multiple times in a
+	 * directory and subdirectories and returns a array with the
+	 * paths of the found files
+	 *
+	 * @param string $file
+	 * @param string $path
+	 *
+	 * @return string[]
+	 */
+	public function searchForFileOccurrence($file, $path) {
+		return $this->checkForFileInDirectory($file, $path, false);
+	}
+
+	/**
+	 * Checks if file exists in a directory and
+	 * subdirectories and returns the complete path on success
+	 * null on failure
+	 *
+	 * @param string $file
+	 * @param string $path
+	 *
+	 * @return string|null
+	 */
+	public function searchFileInDirectory($file, $path) {
+		return $this->checkForFileInDirectory($file, $path, true)[0];
+	}
+
+	/**
 	 * Checks if file exists in the given directory and returns
 	 * the complete path (included subdirectories) if the file exists null if not
 	 *
 	 * @param string $file
 	 * @param string $path
+	 * @param bool $single
 	 *
 	 * @return null|string|string[]
 	 */
-	public function checkForFileInPath($file, $path) {
+	private function checkForFileInDirectory($file, $path, $single) {
 		$iterator = new RecursiveDirectoryIterator($path);
 		$foundFiles = array();
 
@@ -48,11 +77,14 @@ class SPDirectoryHelper {
 			if($child->isDir()) {
 				$filePath = $child->getPath(). DS . $file;
 				if(file_exists($filePath)) {
-					return $filePath;
+					array_push($foundFiles, $filePath);
+					if($single) {
+						break;
+					}
 				}
 			}
 		}
 
-		return null;
+		return $foundFiles;
 	}
 }
