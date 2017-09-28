@@ -104,7 +104,7 @@ class SPTheme {
 		$layoutFiles = array();
 
 		if($areaPath = $this->getLayoutPath($area)) {
-			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath);
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->searchFileInDirectory($file, $areaPath);
 			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
 				array_push($layoutFiles, $checkedFile);
 			}
@@ -126,7 +126,7 @@ class SPTheme {
 		$layoutFiles = array();
 
 		if($areaPath = $this->getTemplatePath($area)) {
-			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath, true);
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->searchFileInDirectory($file, $areaPath);
 			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
 				array_push($layoutFiles, $checkedFile);
 			}
@@ -149,7 +149,7 @@ class SPTheme {
 		$layoutFiles = array();
 
 		if($areaPath = $this->getSkinPath($area)) {
-			$checkedFile = SPDirectoryHelper::getSingleInstance()->checkForFileInPath($file, $areaPath);
+			$checkedFile = SPDirectoryHelper::getSingleInstance()->searchFileInDirectory($file, $areaPath);
 			if(!is_null($checkedFile) && strlen($checkedFile) > 0) {
 				array_push($layoutFiles, $checkedFile);
 			}
