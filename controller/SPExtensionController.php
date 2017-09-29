@@ -41,17 +41,7 @@ class SPExtensionController {
 
 		$modelData["translationFiles"] = $this->gatherTranslationFiles($configXmlParser);
 
-		/* Be careful the lambda function is placed in a loop */
-		$lambdaReturnArr = array(
-			"templateFiles" => array(),
-			"skinFiles"     => array(),
-			"jsFiles"       => array()
-		);
-		$gatheredFiles = $this->loadLayoutFiles($lambdaReturnArr, $layoutFiles, function($xmlParser, $area, &$result) use ($modelData) {
-			$result["templateFiles"]   = array_merge($result["templateFiles"], $this->gatherTemplateFiles($xmlParser, $area));
-			$result["skinFiles"]       = array_merge($result["skinFiles"], $this->gatherSkinFiles($xmlParser, $area));
-			$result["jsFiles"]         = array_merge($result["jsFiles"], $this->gatherJSFiles($xmlParser));
-		});
+		$gatheredFiles = $this->gatherFilesFromLayout($layoutFiles);
 
 		$modelData["templateFiles"] = $this->checkPathsInThemes($gatheredFiles["templateFiles"], "checkForTemplateFile");
 		$modelData["skinFiles"] = $this->checkPathsInThemes($gatheredFiles["skinFiles"], "checkForSkinFile");
@@ -229,26 +219,30 @@ class SPExtensionController {
 	}
 
 	/**
-	 * Iterates through layout files and expects a lambda function
-	 * which a xml parser, the area key, and a output variable is provided as parameters
+	 * Iterates through layout files and gathers template files
 	 *
 	 * @param string[] $areaLayoutFiles
-	 * @param Closure $lambda
-	 * @param mixed $outputType
 	 *
 	 * @return array
 	 */
-	private function loadLayoutFiles($outputType, $areaLayoutFiles, $lambda) {
+	private function gatherFilesFromLayout($areaLayoutFiles) {
 		$xmlParser = new SPXMLParser();
+		$result = array(
+			"templateFiles" => array(),
+			"skinFiles"     => array(),
+			"jsFiles"       => array()
+		);
 
 		foreach($areaLayoutFiles as $areaKey => $layoutFiles) {
 			foreach ( $layoutFiles as $layoutFile ) {
 				$xmlParser->load($layoutFile);
-				$lambda($xmlParser, $areaKey, $outputType);
+				$result["templateFiles"]   = array_merge($result["templateFiles"], $this->gatherTemplateFiles($xmlParser, $areaKey));
+				$result["skinFiles"]       = array_merge($result["skinFiles"], $this->gatherSkinFiles($xmlParser, $areaKey));
+				$result["jsFiles"]         = array_merge($result["jsFiles"], $this->gatherJSFiles($xmlParser));
 			}
 		}
 
-		return $outputType;
+		return $result;
 	}
 
 	/**
